@@ -17,42 +17,51 @@ document.addEventListener("DOMContentLoaded", () => {
         activityCard.className = "activity-card";
 
         const spotsLeft = details.max_participants - details.participants.length;
-        const participantsList = details.participants.length
-          ? details.participants
-              .map(
-                (email) => `
-                  <li class="participant-item">
-                    <span class="participant-email">${email}</span>
-                    <button
-                      type="button"
-                      class="delete-participant"
-                      data-activity="${name}"
-                      data-email="${email}"
-                      aria-label="Remove ${email} from ${name}"
-                      title="Remove ${email}"
-                    >
-                      ×
-                    </button>
-                  </li>
-                `
-              )
-              .join("")
-          : "<li class='participant-item empty-participant'>No participants yet</li>";
 
         activityCard.innerHTML = `
           <div class="activity-header">
-            <h4>${name}</h4>
+            <h4></h4>
             <span class="badge">${spotsLeft} spots left</span>
           </div>
           <p class="description">${details.description}</p>
           <p><strong>Schedule:</strong> ${details.schedule}</p>
           <div class="participants-box">
             <h5>Participants</h5>
-            <ul class="participants-list">
-              ${participantsList}
-            </ul>
+            <ul class="participants-list"></ul>
           </div>
         `;
+
+        activityCard.querySelector(".activity-header h4").textContent = name;
+
+        const participantsListEl = activityCard.querySelector(".participants-list");
+        if (details.participants.length) {
+          details.participants.forEach((email) => {
+            const li = document.createElement("li");
+            li.className = "participant-item";
+
+            const emailSpan = document.createElement("span");
+            emailSpan.className = "participant-email";
+            emailSpan.textContent = email;
+
+            const deleteButton = document.createElement("button");
+            deleteButton.type = "button";
+            deleteButton.className = "delete-participant";
+            deleteButton.dataset.activity = name;
+            deleteButton.dataset.email = email;
+            deleteButton.setAttribute("aria-label", `Remove ${email} from ${name}`);
+            deleteButton.setAttribute("title", `Remove ${email}`);
+            deleteButton.textContent = "×";
+
+            li.appendChild(emailSpan);
+            li.appendChild(deleteButton);
+            participantsListEl.appendChild(li);
+          });
+        } else {
+          const li = document.createElement("li");
+          li.className = "participant-item empty-participant";
+          li.textContent = "No participants yet";
+          participantsListEl.appendChild(li);
+        }
 
         activitiesList.appendChild(activityCard);
 
